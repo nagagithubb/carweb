@@ -8,7 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -29,8 +32,9 @@ import javax.ws.rs.core.Response;
 @Path("/car")
 public class carResource {
 
+    car c = new car();
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Path("getCar/{id}")
     public List<car> getCar(@PathParam("id") int ID) throws SQLException {
 
@@ -46,7 +50,7 @@ public class carResource {
             PreparedStatement ps = conn.prepareStatement(stmt);
             ps.setInt(1, ID);
             ResultSet rs = ps.executeQuery();
-            car c = new car();
+           
             
             List listPerson = new ArrayList();  
             while (rs.next()) {
@@ -69,4 +73,19 @@ public class carResource {
        return eRRlistPerson;
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes({"application/json"})
+    @Path("postCar")
+    public List<car> postCar(car cp)
+    {
+        //System.out.println("------------in here------------");
+        List listPerson1 = new ArrayList();    
+        listPerson1.add(cp.getId());
+        listPerson1.add(cp.getBrand());
+        listPerson1.add(cp.getModel());
+        listPerson1.add(cp.getPrice());
+        listPerson1.add(cp.getWheels());
+        return listPerson1;
+    }
 }
