@@ -64,7 +64,7 @@ public class carResource {
             //System.out.println("<<<<<<<"+c.getModel());
             //String message = c.getId() +" "+ c.getBrand() +" "+ c.getModel() +" "+ c.getPrice() +" "+ c.getWheels();
            // return Response.status(Response.Status.OK).entity(listPerson).build();
-           return listPerson;
+           return listPerson; 
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(carResource.class.getName()).log(Level.SEVERE, null, ex);
