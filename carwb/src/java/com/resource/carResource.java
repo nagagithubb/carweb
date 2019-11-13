@@ -33,14 +33,15 @@ import javax.ws.rs.core.Response;
 public class carResource {
 
     car c = new car();
+
     @GET
-    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("getCar/{id}")
     public List<car> getCar(@PathParam("id") int ID) throws SQLException {
 
         Connection conn = null;
-        List eRRlistPerson = new ArrayList(); 
-            
+        List eRRlistPerson = new ArrayList();
+
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/restful", "root", "12345");
@@ -50,9 +51,8 @@ public class carResource {
             PreparedStatement ps = conn.prepareStatement(stmt);
             ps.setInt(1, ID);
             ResultSet rs = ps.executeQuery();
-           
-            
-            List listPerson = new ArrayList();  
+
+            List<car> listPerson = new ArrayList<>();
             while (rs.next()) {
                 c.setId(rs.getInt("id"));
                 c.setBrand(rs.getString("brand"));
@@ -61,31 +61,43 @@ public class carResource {
                 c.setWheels(rs.getInt("wheels"));
                 listPerson.add(c);
             }
+            //System.out.println(listPerson.get(0).getBrand());
             //System.out.println("<<<<<<<"+c.getModel());
             //String message = c.getId() +" "+ c.getBrand() +" "+ c.getModel() +" "+ c.getPrice() +" "+ c.getWheels();
-           // return Response.status(Response.Status.OK).entity(listPerson).build();
-           return listPerson; 
+            // return Response.status(Response.Status.OK).entity(listPerson).build();
+            return listPerson;
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(carResource.class.getName()).log(Level.SEVERE, null, ex);
         }
-       // return Response.status(Response.Status.NOT_FOUND).build();
-       return eRRlistPerson;
+        // return Response.status(Response.Status.NOT_FOUND).build();
+        return eRRlistPerson;
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({"application/json"})
     @Path("postCar")
-    public List<car> postCar(car cp)
-    {
-        //System.out.println("------------in here------------");
-        List listPerson1 = new ArrayList();    
-        listPerson1.add(cp.getId());
-        listPerson1.add(cp.getBrand());
-        listPerson1.add(cp.getModel());
-        listPerson1.add(cp.getPrice());
-        listPerson1.add(cp.getWheels());
-        return listPerson1;
+    public Response postCar(car cp) throws SQLException {                
+        try {           
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(carResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/restful", "root", "12345");
+
+        String stmt = "Insert into car(id,brand,model,price,wheels) values(?,?,?,?,?)";
+        System.out.println(stmt);
+        PreparedStatement ps = conn.prepareStatement(stmt);
+        ps.setInt(1, cp.getId());
+        ps.setString(2, cp.getBrand());
+        ps.setString(3, cp.getModel());
+        ps.setDouble(4, cp.getPrice());
+        ps.setInt(5, cp.getWheels());
+        int result = ps.executeUpdate();
+        if(result > 0)
+        return Response.status(Response.Status.CREATED).build();
+        else
+            return Response.status(Response.Status.NOT_FOUND).build();
     }
 }
